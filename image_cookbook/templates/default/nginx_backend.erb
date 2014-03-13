@@ -1,0 +1,14 @@
+upstream <%= @name %> {
+<% @backend.upstream.servers.each do |rule| -%>
+    server <%= rule %>;
+<% end -%>
+}
+
+server {
+    listen 80;
+    server_name <%= @backend['server_name'] %>;
+
+    location / {
+        proxy_pass http://<%= @name %>;
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "builders": [
+        {
+            "type": "digitalocean",
+
+            "region_id": 5,
+
+            "droplet_name": "router-build",
+            "snapshot_name": "router-{{timestamp}}"
+        }
+    ],
+
+    "provisioners": [
+        {
+            "type": "chef-solo",
+
+            "install_command": "wget -O- https://www.opscode.com/chef/install.sh | sudo bash",
+
+            "cookbook_paths": ["cookbooks"],
+
+            "run_list": [
+                "apt",
+                "ufw",
+                "fail2ban",
+                "ntp",
+                "git",
+                "zsh",
+                "vim",
+                "vslinko",  
+                "router"
+            ],
+
+            "json": {
+                "firewall": {
+                    "rules": [
+                        {"http": {
+                            "port": 80,
+                            "protocol": "tcp"
+                        }}
+                    ]
+                },
+                "ntp": {
+                    "servers": ["0.nl.pool.ntp.org", "1.nl.pool.ntp.org", "0.de.pool.ntp.org"]
+                },
+                "router": {
+                    "backends": {
+                        "pegasys_pegas": {
+                            "server_name": "xn--80affo5apb.xn--80aff3bn.xn--h1aebjgn4f.xn--p1ai",
+                            "upstream": {
+                                "servers": [
+                                    "188.226.151.122:80"
+                                ]
+                            }
+                        },
+                        "sigma_pegas": {
+                            "server_name": "xn--80aforw.xn--80aff3bn.xn--h1aebjgn4f.xn--p1ai",
+                            "upstream": {
+                                "servers": [
+                                    "188.226.172.170:80"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
